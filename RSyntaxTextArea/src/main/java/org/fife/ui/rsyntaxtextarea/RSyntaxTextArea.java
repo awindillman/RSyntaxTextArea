@@ -214,6 +214,11 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	private boolean autoIndentEnabled;
 
 	/**
+	 * String that will be added when autoIndent is applied
+	 */
+	private String autoIndentString = "\t";
+
+	/**
 	 * Whether curly braces should be closed on Enter key presses, (if the
 	 * current language supports it).
 	 */
@@ -3300,6 +3305,19 @@ private boolean fractionalFontMetricsEnabled;
 		 * and once here).
 		 */
 		return modelToToken(viewToModel(p));
+	}
+
+	/**
+	 * String that will be added when autoIndent is applied
+	 */
+	public String getAutoIndentString()
+	{
+		return autoIndentString;
+	}
+
+	public void setAutoIndentString(String autoIndentString)
+	{
+		this.autoIndentString = autoIndentString;
 	}
 
 	/**

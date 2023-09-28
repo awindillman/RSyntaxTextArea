@@ -1608,7 +1608,7 @@ public class RSyntaxTextAreaEditorKit extends RTextAreaEditorKit {
 			// calculation depends on the previous line's state
 			// AFTER the Enter press (stuff may have been moved down).
 			if (textArea.getShouldIndentNextLine(lineNum)) {
-				textArea.replaceSelection("\t");
+				textArea.replaceSelection( textArea.getAutoIndentString() );
 			}
 
 			possiblyCloseCurlyBrace(textArea, leadingWS);
