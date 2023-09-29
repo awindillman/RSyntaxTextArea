@@ -103,6 +103,11 @@ public class Gutter extends JPanel {
 	private int lineNumberingStartIndex;
 
 	/**
+	 * Formats line numbers into a string to be displayed.
+	 */
+	private LineNumberFormatter lineNumberFormatter;
+
+	/**
 	 * The font used to render line numbers.
 	 */
 	private Font lineNumberFont;
@@ -152,6 +157,7 @@ public class Gutter extends JPanel {
 		lineNumberColor = LineNumberList.DEFAULT_LINE_NUMBER_COLOR;
 		lineNumberFont = RTextArea.getDefaultFont();
 		lineNumberingStartIndex = 1;
+		lineNumberFormatter = LineNumberList.DEFAULT_LINE_NUMBER_FORMATTER;
 		iconRowHeaderInheritsGutterBackground = false;
 
 		setTextArea(textArea);
@@ -436,6 +442,17 @@ public class Gutter extends JPanel {
 	 */
 	public int getLineNumberingStartIndex() {
 		return lineNumberingStartIndex;
+	}
+
+	/**
+	 * Returns the line number formatter. The default value is
+	 * {@link LineNumberList#DEFAULT_LINE_NUMBER_FORMATTER}
+	 *
+	 * @return The formatter.
+	 * @see #setLineNumberFormatter(LineNumberFormatter)
+	 */
+	public LineNumberFormatter getLineNumberFormatter() {
+		return lineNumberFormatter;
 	}
 
 
@@ -825,12 +842,17 @@ public class Gutter extends JPanel {
 
 	/**
 	 * Toggles whether the icon row header (used for breakpoints, bookmarks,
-	 * etc.) is enabled.
+	 * etc.) is enabled.<p>
+	 *
+	 * Most clients do not need to call this method directly. This is usually
+	 * handled by `RTextScrollPane` directly. Calling this directly may
+	 * require the caller to ensure this `gutter` is visible and sized
+	 * properly in its parent container.
 	 *
 	 * @param enabled Whether the icon row header is enabled.
 	 * @see #isIconRowHeaderEnabled()
 	 */
-	void setIconRowHeaderEnabled(boolean enabled) {
+	public void setIconRowHeaderEnabled(boolean enabled) {
 		if (iconArea!=null) {
 			if (enabled) {
 				add(iconArea, BorderLayout.LINE_START);
@@ -915,12 +937,32 @@ public class Gutter extends JPanel {
 
 
 	/**
-	 * Toggles whether line numbers are visible.
+	 * Sets a custom line number formatter. Can be called when other number
+	 * formats are needed like hindu-arabic numerals.
+	 *
+	 * @param formatter The new line number formatter.
+	 * @see #getLineNumberFormatter()
+	 */
+	public void setLineNumberFormatter(LineNumberFormatter formatter) {
+		if (formatter != lineNumberFormatter) {
+			lineNumberFormatter = formatter;
+			lineNumberList.setLineNumberFormatter(formatter);
+		}
+	}
+
+
+	/**
+	 * Toggles whether line numbers are visible.<p>
+	 *
+	 * Most clients do not need to call this method directly. This is usually
+	 * handled by `RTextScrollPane` directly. Calling this directly may
+	 * require the caller to ensure this `gutter` is visible and sized
+	 * properly in its parent container.
 	 *
 	 * @param enabled Whether line numbers should be visible.
 	 * @see #getLineNumbersEnabled()
 	 */
-	void setLineNumbersEnabled(boolean enabled) {
+	public void setLineNumbersEnabled(boolean enabled) {
 		if (lineNumberList!=null) {
 			if (enabled) {
 				add(lineNumberList);
@@ -968,11 +1010,14 @@ public class Gutter extends JPanel {
 
 	/**
 	 * Sets the text area being displayed.  This will clear any tracking
-	 * icons currently displayed.
+	 * icons currently displayed.<p>
+	 *
+	 * Most clients do not need to call this method directly. This is
+	 * usually handled by `RTextScrollPane` directly.
 	 *
 	 * @param textArea The text area.
 	 */
-	void setTextArea(RTextArea textArea) {
+	public void setTextArea(RTextArea textArea) {
 
 		if (this.textArea!=null) {
 			listener.uninstall();
@@ -991,6 +1036,8 @@ public class Gutter extends JPanel {
 					getCurrentLineNumberColor());
 				lineNumberList.setLineNumberingStartIndex(
 						getLineNumberingStartIndex());
+				lineNumberList.setLineNumberFormatter(
+					getLineNumberFormatter());
 			}
 			else {
 				lineNumberList.setTextArea(textArea);
